@@ -52,13 +52,18 @@ class TestMsg(unittest.TestCase):
     def test_send_and_list(self):
         import msg
         from common import cfg
-        # 指向临时根
+        # 指向独立临时根，避免与其他测试共享状态
         self.tmp = tempfile.mkdtemp()
         import common
         common.ROOT = self.tmp
         shutil.copy(os.path.join(ROOT, "CONFIG.example.json"),
                     os.path.join(self.tmp, "CONFIG.json"))
         c = cfg()
+        # 确保收件箱干净（清除任何残留消息）
+        inbox = os.path.join(c["root"], c["exchange"], "INBOX", "Hermes")
+        if os.path.isdir(inbox):
+            for f in os.listdir(inbox):
+                os.remove(os.path.join(inbox, f))
         # CONFIG.example.json 里有 Hermes
         mid = msg.send("Hermes", "测试标题", "测试内容")
         self.assertIsNotNone(mid)
