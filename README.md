@@ -5,6 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.8+](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
 [![Tests](https://img.shields.io/badge/tests-5%2F5%20passing-brightgreen.svg)](tests/)
+[![CI](https://github.com/yaowanxiang/ai-unified-memory/actions/workflows/ci.yml/badge.svg)](https://github.com/yaowanxiang/ai-unified-memory/actions)
 ![Zero dependencies](https://img.shields.io/badge/deps-0-brightgreen)
 
 ## 🎯 Why AUM?
