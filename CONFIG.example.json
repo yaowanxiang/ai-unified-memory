@@ -1,0 +1,46 @@
+{
+  "system_name": "AI Unified Memory (AUM)",
+  "version": "1.1.0",
+  "description": "Multi-AI shared memory: public library (authoritative) + private libraries (per-AI mirrors) + exchange (cross-AI messaging) + scheduler (fully automated)",
+  "updated": "2026-08-07",
+
+  "root": "./",
+  "public_lib": "01_公用库",
+  "private_lib": "02_专有库",
+  "exchange": "03_交换区",
+  "snapshot": "04_快照备份",
+  "scripts": "scripts",
+  "logs": "00_调度中心/LOGS",
+  "status_file": "00_调度中心/STATUS.json",
+
+  "ais": {
+    "Hermes": {
+      "role": "Orchestrator / Academic writing",
+      "memory_source": "C:/path/to/hermes/memories",
+      "memory_files": ["MEMORY.md", "USER.md"],
+      "inject_file": "02_专有库/Hermes/共享记忆注入.md",
+      "enabled": true
+    },
+    "Codex": {
+      "role": "Coding / Terminal",
+      "memory_source": "C:/path/to/.codex/memories",
+      "memory_files": ["MEMORY.md", "memory_summary.md"],
+      "inject_file": "02_专有库/Codex/共享记忆注入.md",
+      "enabled": true
+    },
+    "OpenClaw": {
+      "role": "Multi-agent ecosystem",
+      "memory_source": "C:/path/to/.openclaw",
+      "memory_files": [],
+      "agents_dir": "C:/path/to/.openclaw/agents",
+      "inject_file": "02_专有库/OpenClaw/共享记忆注入.md",
+      "enabled": true
+    }
+  },
+
+  "schedule": {
+    "incremental_scan": "every 2 hours",
+    "full_sync_snapshot": "daily 03:00",
+    "search_on_demand": "anytime"
+  }
+}

@@ -1,0 +1,11 @@
+# 放置共享记忆条目 (markdown, 带 YAML frontmatter)
+# 示例:
+# ---
+# title: 用户核心档案
+# source_ai: 调度中心
+# category: 00_用户画像
+# tags: 用户, 档案
+# summary: 所有AI必须知晓的用户信息
+# ---
+# # 用户核心档案
+# - 姓名: ...

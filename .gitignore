@@ -1,0 +1,14 @@
+# Runtime state — never commit
+CONFIG.json
+00_调度中心/STATUS.json
+00_调度中心/GLOBAL_INDEX.json
+00_调度中心/LOGS/
+04_快照备份/
+
+# Python
+__pycache__/
+*.pyc
+
+# OS
+.DS_Store
+Thumbs.db
