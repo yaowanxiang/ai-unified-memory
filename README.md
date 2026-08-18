@@ -8,6 +8,30 @@
 [![CI](https://github.com/yaowanxiang/ai-unified-memory/actions/workflows/ci.yml/badge.svg)](https://github.com/yaowanxiang/ai-unified-memory/actions)
 ![Zero dependencies](https://img.shields.io/badge/deps-0-brightgreen)
 
+## 💻 图形化客户端（傻瓜式，拿来就用）
+
+**无需编程，下载安装包双击即用：**
+
+| 平台 | 下载 |
+|------|------|
+| 🪟 Windows | `AI-Unified-Memory-Windows.exe` (下载即运行) |
+| 🍎 macOS | `AI-Unified-Memory-macOS` (App) |
+| 🐧 Linux | `AI-Unified-Memory-Linux.AppImage` |
+
+**界面功能：**
+- 🔄 **一键同步**：扫描→提升→分发→索引→快照 全自动
+- 🔍 **搜索记忆**：跨全库关键词检索
+- 📊 **记忆库状态**：各库文件统计一目了然
+- ⚡ 深色专业主题，全部操作一键完成
+
+> 复杂的同步/分类/分发逻辑全部在后台自动运行，用户只需**点一个按钮**。
+
+### 开发者模式
+```bash
+python gui_app.py                # 启动图形界面
+python scripts/coordinator.py --full   # 或命令行全量同步
+```
+
 ## 🎯 Why AUM?
 
 When you run multiple AI agents (Hermes, Codex, OpenClaw, Qoder, WorkBuddy, Claude Code…), each keeps its own private memory. The result:

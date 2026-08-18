@@ -1,0 +1,89 @@
+name: Build Installers
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v*']
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            artifact: AI-Unified-Memory.exe
+            asset_name: AI-Unified-Memory-Windows.exe
+          - os: macos-latest
+            artifact: AI-Unified-Memory
+            asset_name: AI-Unified-Memory-macOS
+          - os: ubuntu-latest
+            artifact: AI-Unified-Memory.AppImage
+            asset_name: AI-Unified-Memory-Linux.AppImage
+
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyinstaller
+
+    - name: Build GUI (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        python -m PyInstaller --onefile --windowed `
+          --name "AI-Unified-Memory" `
+          --hidden-import=common `
+          --add-data "scripts;scripts" `
+          --add-data "01_公用库;01_公用库" `
+          --add-data "02_专有库;02_专有库" `
+          --add-data "03_交换区;03_交换区" `
+          gui_app.py
+
+    - name: Build GUI (macOS/Linux)
+      if: runner.os != 'Windows'
+      shell: bash
+      run: |
+        python -m PyInstaller --onefile --windowed \
+          --name "AI-Unified-Memory" \
+          --hidden-import=common \
+          --add-data "scripts:scripts" \
+          --add-data "01_公用库:01_公用库" \
+          --add-data "02_专有库:02_专有库" \
+          --add-data "03_交换区:03_交换区" \
+          gui_app.py
+
+    - name: Prepare Linux artifact
+      if: runner.os == 'Linux'
+      shell: bash
+      run: |
+        cd dist
+        chmod +x AI-Unified-Memory
+        mv AI-Unified-Memory AI-Unified-Memory.AppImage
+
+    - name: List artifacts
+      shell: bash
+      run: ls -la dist/
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.asset_name }}
+        path: dist/${{ matrix.artifact }}
+        if-no-files-found: error
+
+    - name: Attach to Release
+      if: startsWith(github.ref, 'refs/tags/v')
+      uses: softprops/action-gh-release@v2
+      with:
+        files: dist/${{ matrix.artifact }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
