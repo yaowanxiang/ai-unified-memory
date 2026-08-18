@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Unified Memory</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: "Segoe UI", "Microsoft YaHei", sans-serif; background: #f0f2f5; color: #1a1a2e; }
+  .header { background: linear-gradient(135deg, #0f3460, #16213e); color: #fff; padding: 16px 26px; display: flex; align-items: center; gap: 14px; }
+  .header h1 { font-size: 19px; }
+  .header .sub { font-size: 12px; opacity: .7; }
+  .nav { display: flex; gap: 2px; background: #fff; padding: 0 16px; border-bottom: 1px solid #e2e8f0; }
+  .nav button { border: none; background: none; padding: 14px 20px; font-size: 14px; cursor: pointer; color: #555; border-bottom: 3px solid transparent; }
+  .nav button.active { color: #0f3460; border-bottom-color: #0f3460; font-weight: 600; }
+  .page { display: none; padding: 20px; max-width: 1200px; margin: 0 auto; }
+  .page.active { display: block; }
+  .card { background: #fff; border-radius: 12px; padding: 18px; box-shadow: 0 2px 8px rgba(0,0,0,.05); margin-bottom: 16px; }
+  .card h3 { font-size: 15px; margin-bottom: 12px; color: #0f3460; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  input[type=text], textarea, select { width: 100%; padding: 9px 12px; border: 1px solid #d0d5dd; border-radius: 8px; font-size: 13px; font-family: inherit; }
+  textarea { resize: vertical; }
+  .btn { background: #0f3460; color: #fff; border: none; padding: 9px 20px; border-radius: 8px; font-size: 13px; cursor: pointer; margin-top: 10px; }
+  .btn:hover { background: #16213e; }
+  .btn.green { background: #059669; } .btn.green:hover { background: #047857; }
+  .btn.orange { background: #d97706; } .btn.orange:hover { background: #b45309; }
+  .result { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; margin-top: 10px; font-size: 13px; line-height: 1.7; white-space: pre-wrap; max-height: 400px; overflow-y: auto; word-break: break-all; }
+  .mem-item { border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; margin: 6px 0; cursor: pointer; font-size: 13px; transition: background .15s; }
+  .mem-item:hover { background: #eef2ff; }
+  .mem-item .t { font-weight: 600; color: #0f3460; }
+  .mem-item .m { color: #6b7280; font-size: 11px; margin-top: 3px; }
+  .badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; background: #eef2ff; color: #0f3460; margin-right: 6px; }
+  .msg-item { border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; margin: 6px 0; font-size: 13px; }
+  .msg-item.unread { border-left: 4px solid #ef4444; }
+  .status-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #16213e; color: #cbd5e1; font-size: 12px; padding: 7px 24px; display: flex; gap: 20px; z-index: 9; }
+  .stat-chip { display: inline-block; background: #eef2ff; border-radius: 8px; padding: 4px 10px; font-size: 12px; margin: 3px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>🧠 AI Unified Memory</h1>
+    <div class="sub">多AI共享记忆中心 · 公用库 + 专有库 + 交换区 · v2.0</div>
+  </div>
+</div>
+
+<div class="nav">
+  <button class="active" onclick="showPage('browse', this)">📚 记忆浏览</button>
+  <button onclick="showPage('search', this)">🔍 语义检索</button>
+  <button onclick="showPage('scheduler', this)">⚙️ 调度中心</button>
+  <button onclick="showPage('messages', this)">📮 跨AI消息</button>
+  <button onclick="showPage('hot', this)">🔥 热记忆</button>
+</div>
+
+<!-- 记忆浏览 -->
+<div id="page-browse" class="page active">
+  <div class="card">
+    <h3>📚 公用库记忆（按分类）</h3>
+    <div id="mem-list"><span style="color:#6b7280">加载中…</span></div>
+  </div>
+</div>
+
+<!-- 语义检索 -->
+<div id="page-search" class="page">
+  <div class="card">
+    <h3>🔍 语义检索（关键词 + 同义词扩展 + TF加权）</h3>
+    <div style="display:flex; gap:10px; align-items:center;">
+      <input type="text" id="search-q" placeholder="例：股票 / 记忆 / 建筑节能 / Python" style="flex:1" onkeydown="if(event.key==='Enter')doSearch()">
+      <select id="search-scope" style="width:140px">
+        <option value="public">公用库</option>
+        <option value="all">全部（含专有/交换区）</option>
+        <option value="private">专有库</option>
+      </select>
+      <button class="btn" onclick="doSearch()">检索</button>
+    </div>
+    <div id="search-result" class="result" style="margin-top:12px">输入关键词开始检索…</div>
+  </div>
+</div>
+
+<!-- 调度中心 -->
+<div id="page-scheduler" class="page">
+  <div class="grid2">
+    <div class="card">
+      <h3>⚙️ 协调器控制</h3>
+      <button class="btn" onclick="runCoord(false)">▶ 增量同步（扫描→提升→分发）</button>
+      <button class="btn green" onclick="runCoord(true)" style="margin-left:8px">⟳ 全量同步 + 快照</button>
+      <button class="btn orange" onclick="resolveConflicts()" style="margin-left:8px">🧹 冲突消解</button>
+      <div class="result" id="coord-result">未运行</div>
+    </div>
+    <div class="card">
+      <h3>📊 系统状态</h3>
+      <div id="sys-status">加载中…</div>
+    </div>
+  </div>
+</div>
+
+<!-- 跨AI消息 -->
+<div id="page-messages" class="page">
+  <div class="grid2">
+    <div class="card">
+      <h3>📨 发送消息</h3>
+      <label style="font-size:12px;color:#555">接收AI</label>
+      <select id="msg-to" style="margin-bottom:8px"></select>
+      <label style="font-size:12px;color:#555">标题</label>
+      <input type="text" id="msg-title" placeholder="消息标题">
+      <label style="font-size:12px;color:#555">内容</label>
+      <textarea id="msg-body" rows="4" placeholder="消息内容"></textarea>
+      <button class="btn" onclick="sendMsg()">发送</button>
+      <div class="result" id="msg-send-result"></div>
+    </div>
+    <div class="card">
+      <h3>📥 收件箱</h3>
+      <button class="btn" onclick="loadMsgs()" style="margin-top:0">刷新</button>
+      <div id="msg-inbox"><span style="color:#6b7280">点击刷新加载…</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- 热记忆 -->
+<div id="page-hot" class="page">
+  <div class="card">
+    <h3>🔥 热记忆（按检索频率排序，优先注入）</h3>
+    <button class="btn" onclick="loadHot()" style="margin-top:0">刷新</button>
+    <div id="hot-list" style="margin-top:12px"><span style="color:#6b7280">加载中…</span></div>
+  </div>
+</div>
+
+<div class="status-bar">
+  <span id="st-api">API: 连接中…</span>
+  <span id="st-count">记忆: —</span>
+</div>
+
+<script>
+async function api(url, method='GET', body=null) {
+  const opt = { method, headers: {'Content-Type':'application/json'} };
+  if (body) opt.body = JSON.stringify(body);
+  const r = await fetch(url, opt);
+  return r.json();
+}
+
+function showPage(name, btn) {
+  document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  if (name === 'browse') loadMemories();
+  if (name === 'scheduler') loadStatus();
+  if (name === 'messages') loadMsgs();
+  if (name === 'hot') loadHot();
+}
+
+async function init() {
+  try {
+    await api('/api/health');
+    document.getElementById('st-api').textContent = 'API: ✅ 已连接';
+  } catch(e) {
+    document.getElementById('st-api').textContent = 'API: ❌ 失败';
+  }
+  loadMemories();
+  loadAIs();
+}
+
+async function loadAIs() {
+  try {
+    const d = await api('/api/ais');
+    document.getElementById('msg-to').innerHTML =
+      d.ais.map(a => `<option>${a}</option>`).join('');
+  } catch(e) {}
+}
+
+async function loadMemories() {
+  const box = document.getElementById('mem-list');
+  try {
+    const d = await api('/api/memories');
+    let total = 0;
+    let html = '';
+    d.forEach(cat => {
+      total += cat.items.length;
+      html += `<h4 style="margin:14px 0 6px;color:#0f3460">${cat.category} (${cat.items.length})</h4>`;
+      cat.items.forEach(it => {
+        html += `<div class="mem-item" onclick="viewMemory('${it.path.replace(/'/g,"\\'")}')">
+          <div class="t">📄 ${it.title}</div>
+          <div class="m">${it.updated} · ${it.size}B</div></div>`;
+      });
+    });
+    html = html || '<span style="color:#6b7280">公用库暂无记忆，请先运行调度</span>';
+    box.innerHTML = html;
+    document.getElementById('st-count').textContent = `记忆: ${total} 条`;
+  } catch(e) {
+    box.innerHTML = '<span style="color:#ef4444">加载失败: ' + e.message + '</span>';
+  }
+}
+
+async function viewMemory(path) {
+  const d = await api('/api/memory?path=' + encodeURIComponent(path));
+  const body = (d.content || '').split('---').slice(2).join('---').trim() || d.content;
+  alert(body.slice(0, 2000) || '(空内容)');
+}
+
+async function doSearch() {
+  const box = document.getElementById('search-result');
+  const q = document.getElementById('search-q').value.trim();
+  if (!q) { box.textContent = '请输入关键词'; return; }
+  box.textContent = '检索中…';
+  const d = await api('/api/search', 'POST', {
+    query: q,
+    limit: 15,
+    scope: document.getElementById('search-scope').value,
+  });
+  if (!d.results || !d.results.length) { box.textContent = '无结果'; return; }
+  let out = `找到 ${d.results.length} 条：\n\n`;
+  d.results.forEach((r, i) => {
+    out += `[${r.score}] (${r.location}) ${r.title}\n`;
+    out += `  ${r.snippet.slice(0, 90)}…\n`;
+    out += `  📅 ${r.updated}\n\n`;
+  });
+  box.textContent = out;
+}
+
+async function runCoord(full) {
+  const box = document.getElementById('coord-result');
+  box.textContent = full ? '全量同步运行中…（约1-3分钟）' : '增量同步运行中…';
+  const d = await api('/api/coordinator', 'POST', { full });
+  setTimeout(async () => {
+    const st = await api('/api/status');
+    box.textContent = `完成！\n\n最近协调: ${st.last_coordinator}\n公用记忆: ${st.public_count} 条\n\n${(d.log||[]).slice(-20).join('\n')}`;
+    loadMemories();
+  }, 1500);
+}
+
+async function loadStatus() {
+  const d = await api('/api/status');
+  let html = `<div class="stat-chip">协调器: ${d.last_coordinator}</div>`;
+  html += `<div class="stat-chip">公用记忆: ${d.public_count} 条</div><br><br>`;
+  Object.entries(d.ais || {}).forEach(([ai, info]) => {
+    html += `<div class="stat-chip">${ai}: 最近扫描 ${info.last_scan} · ${info.last_scan_count}条</div>`;
+  });
+  document.getElementById('sys-status').innerHTML = html;
+}
+
+async function resolveConflicts() {
+  const box = document.getElementById('coord-result');
+  const d = await api('/api/resolve', 'POST');
+  box.textContent = `🧹 冲突消解完成：合并 ${d.merged} 组，归档 ${(d.archived||[]).length} 个旧版本`;
+  loadMemories();
+}
+
+async function sendMsg() {
+  const d = await api('/api/msg', 'POST', {
+    to: document.getElementById('msg-to').value,
+    title: document.getElementById('msg-title').value,
+    body: document.getElementById('msg-body').value,
+  });
+  document.getElementById('msg-send-result').textContent = d.id ? '✅ 已发送: ' + d.id : '❌ 失败';
+  document.getElementById('msg-title').value = '';
+  document.getElementById('msg-body').value = '';
+}
+
+async function loadMsgs() {
+  const box = document.getElementById('msg-inbox');
+  const d = await api('/api/msgs');
+  if (!d.messages || !d.messages.length) { box.innerHTML = '<span style="color:#6b7280">无消息</span>'; return; }
+  box.innerHTML = d.messages.map(m =>
+    `<div class="msg-item ${m.status}">
+      <b>[${m.to}]</b> ${m.title} <span style="color:#9ca3af">(${m.status})</span>
+      <button class="btn" style="padding:3px 10px;font-size:11px;float:right" onclick="readMsg('${m.id}')">读</button>
+    </div>`).join('');
+}
+
+async function readMsg(id) {
+  const d = await api('/api/msg/read', 'POST', { id });
+  if (d.content) alert(d.content.split('---').slice(2).join('---').trim() || d.content);
+  loadMsgs();
+}
+
+async function loadHot() {
+  const d = await api('/api/hot?limit=15');
+  const box = document.getElementById('hot-list');
+  if (!d.hot || !d.hot.length) { box.innerHTML = '<span style="color:#6b7280">暂无访问记录</span>'; return; }
+  box.innerHTML = d.hot.map(h =>
+    `<div class="mem-item"><div class="t">🔥 ${h.count}次 · ${h.path}</div><div class="m">最后访问 ${h.last}</div></div>`).join('');
+}
+
+init();
+</script>
+</body>
+</html>

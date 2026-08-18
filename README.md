@@ -66,7 +66,25 @@ python gui_app.py                     # launch the GUI
 python scripts/coordinator.py --full  # or full sync from the command line
 ```
 
-### Quick Start
+## 🖥 Desktop App (Windows / macOS / Linux)
+
+Download the installer for your platform from [Releases](https://github.com/yaowanxiang/ai-unified-memory/releases):
+
+| Platform | Installer |
+|----------|-----------|
+| Windows | `AUM-Windows-x64.exe` (double-click to run) |
+| macOS | `AUM-macOS.app` (drag to Applications) |
+| Linux | `AUM-Linux-x86_64.AppImage` (chmod +x, run) |
+
+**Features**: memory browser · semantic search (synonym-expanded TF scoring) · one-click scheduler · conflict resolution · cross-AI messaging · hot-memory ranking.
+
+```bash
+# Build locally (requires Python 3.8+)
+pip install -r requirements-desktop.txt
+bash scripts/build_client.sh        # auto-detects platform
+```
+
+## 🚀 Quick Start
 
 ```bash
 # 1. Copy config template and fill in your AI memory source paths

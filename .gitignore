@@ -15,3 +15,8 @@ Thumbs.db
 
 # Runtime exchange messages (test residue)
 03_交换区/
+
+# Build artifacts
+dist/
+build/
+*.spec
