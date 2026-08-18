@@ -43,9 +43,7 @@ jobs:
           --name "AI-Unified-Memory" `
           --hidden-import=common `
           --add-data "scripts;scripts" `
-          --add-data "01_公用库;01_公用库" `
-          --add-data "02_专有库;02_专有库" `
-          --add-data "03_交换区;03_交换区" `
+          --add-data "CONFIG.example.json;." `
           gui_app.py
 
     - name: Build GUI (macOS/Linux)
@@ -56,9 +54,7 @@ jobs:
           --name "AI-Unified-Memory" \
           --hidden-import=common \
           --add-data "scripts:scripts" \
-          --add-data "01_公用库:01_公用库" \
-          --add-data "02_专有库:02_专有库" \
-          --add-data "03_交换区:03_交换区" \
+          --add-data "CONFIG.example.json:." \
           gui_app.py
 
     - name: Prepare Linux artifact
