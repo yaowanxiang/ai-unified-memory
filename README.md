@@ -14,6 +14,13 @@
 
 [![Release](https://img.shields.io/badge/Release-v1.2.0-blue.svg)](https://github.com/yaowanxiang/ai-unified-memory/releases)
 
+
+## 🖼️ 界面预览
+
+![AI Unified Memory GUI](docs/screenshots/gui-main.png)
+
+*图形化客户端：记忆浏览 / 语义检索 / 调度中心 / 跨AI消息 / 热记忆*
+
 ## 📥 立即下载（三平台安装包，双击即用）
 
 | 平台 | 轻量版（基础管理） | 完整版（记忆浏览/语义检索/消息） |
