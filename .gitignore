@@ -20,3 +20,5 @@ Thumbs.db
 dist/
 build/
 *.spec
+# Local debug residue
+aum_jobs.json
