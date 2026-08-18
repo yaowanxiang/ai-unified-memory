@@ -12,6 +12,19 @@
 
 ---
 
+[![Release](https://img.shields.io/badge/Release-v1.2.0-blue.svg)](https://github.com/yaowanxiang/ai-unified-memory/releases)
+
+## 📥 立即下载（三平台安装包，双击即用）
+
+| 平台 | 轻量版（基础管理） | 完整版（记忆浏览/语义检索/消息） |
+|------|-------------------|--------------------------------|
+| 🪟 **Windows** | [⬇️ AI-Unified-Memory-Windows.exe](https://github.com/yaowanxiang/ai-unified-memory/releases/download/v1.2.0/AI-Unified-Memory.exe) (10.6MB) | [⬇️ AUM-Windows-x64.exe](https://github.com/yaowanxiang/ai-unified-memory/releases/download/v1.2.0/AUM-Windows-x64.exe) (17.4MB) |
+| 🍎 **macOS** | [⬇️ AI-Unified-Memory-macOS](https://github.com/yaowanxiang/ai-unified-memory/releases/download/v1.2.0/AI-Unified-Memory) (9.2MB) | [⬇️ AUM-macOS.app](https://github.com/yaowanxiang/ai-unified-memory/releases/download/v1.2.0/AUM) (14.8MB) |
+| 🐧 **Linux** | [⬇️ AI-Unified-Memory-Linux.AppImage](https://github.com/yaowanxiang/ai-unified-memory/releases/download/v1.2.0/AI-Unified-Memory.AppImage) (20MB) | [⬇️ AUM-Linux-x86_64.AppImage](https://github.com/yaowanxiang/ai-unified-memory/releases/download/v1.2.0/AUM-Linux-x86_64.AppImage) (27.4MB) |
+
+> 💡 **轻量版** = tkinter 纯标准库（零依赖，启动最快） · **完整版** = pywebview 现代界面（记忆浏览/语义检索/冲突消解/热记忆/跨AI消息）
+> 🔗 全部版本：[Releases 页面](https://github.com/yaowanxiang/ai-unified-memory/releases)
+
 ## English Introduction
 
 ### What it is
