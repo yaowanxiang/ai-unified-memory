@@ -13,12 +13,35 @@ from typing import Optional
 from fastapi import FastAPI
 from pydantic import BaseModel
 
-# 让 scripts 可导入
-SCRIPTS = Path(__file__).resolve().parent.parent / "scripts"
+# 让 scripts 可导入（兼容开发与 PyInstaller 打包环境）
+import sys as _sys
+FROZEN = bool(getattr(_sys, "frozen", False))
+if FROZEN:
+    _MEIPASS = Path(_sys._MEIPASS)
+    SCRIPTS = _MEIPASS / "scripts"          # 打包: --add-data "scripts:scripts"
+else:
+    SCRIPTS = Path(__file__).resolve().parent.parent / "scripts"
 sys.path.insert(0, str(SCRIPTS))
 
 import common
 import memory_engine
+
+# 打包环境: 数据重定向到用户可写目录 (~/.ai-unified-memory/)，避免写入只读 _MEIPASS
+if FROZEN:
+    DATA_DIR = Path.home() / ".ai-unified-memory"
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    common.ROOT = str(DATA_DIR)
+    # 首次运行: 从 example 复制 CONFIG.json
+    cfg_file = DATA_DIR / "CONFIG.json"
+    if not cfg_file.exists():
+        example = SCRIPTS.parent / "CONFIG.example.json"
+        if example.exists():
+            import shutil
+            shutil.copy(example, cfg_file)
+    # 初始化目录结构
+    for d in ("01_公用库", "02_专有库", "03_交换区/INBOX",
+              "03_交换区/OUTBOX", "04_快照备份", "00_调度中心"):
+        (DATA_DIR / d).mkdir(parents=True, exist_ok=True)
 
 
 class SearchReq(BaseModel):
